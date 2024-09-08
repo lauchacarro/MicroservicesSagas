@@ -23,7 +23,7 @@ builder.Services.AddMassTransit(x =>
     {
 
 
-        cfg.Host(builder.Configuration["AzureServiceBus:ConnectionString"]);
+        cfg.Host(builder.Configuration.GetConnectionString("AzureServiceBus"));
 
 
 

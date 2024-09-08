@@ -6,12 +6,9 @@ namespace MicroservicesSagas.Orchestrator
 {
     public class TransferStateMachine : MassTransitStateMachine<TransferSagaState>
     {
-        private readonly string _serviceBusUrl;
-
         public State Validating { get; private set; }
         public State Transferring { get; private set; }
         public State Receiving { get; private set; }
-        public State Completed { get; private set; }
         public State Failed { get; private set; }
 
         public Event<SubmitTransferEvent> SubmitTransfer { get; private set; }
@@ -26,80 +23,57 @@ namespace MicroservicesSagas.Orchestrator
         public Event<ReceiptIssuedEvent> ReceiptIssuedEvent { get; private set; }
         public Event<OtherReasonReceiptFailedEvent> OtherReasonReceiptFailedEvent { get; private set; }
 
-        public TransferStateMachine(IConfiguration configuration)
+        public TransferStateMachine()
         {
-            _serviceBusUrl = configuration["AzureServiceBus:Url"]!;
 
             InstanceState(x => x.CurrentState);
 
             Initially(
                 When(SubmitTransfer)
+                    .Then(x => x.Saga.CreatedAt = DateTime.Now)
                     .TransitionTo(Validating)
-                    .Publish(context => new ValidateTransferCommand
-                    {
-                        TransactionId = context.Message.TransactionId,
-                        CorrelationId = context.Message.CorrelationId
-
-
-                    })
+                    .Publish(context => new ValidateTransferCommand(context.Message.CorrelationId, context.Message.TransactionId))
             );
 
 
             During(Validating,
                 When(TransferValidatedEvent)
                     .TransitionTo(Transferring)
-                    .Publish(context => new TransferCommand
-                    {
-                        TransactionId = context.Message.TransactionId,
-                        CorrelationId = context.Message.CorrelationId
-                    }),
+                    .Publish(context => new TransferCommand(context.Message.CorrelationId, context.Message.TransactionId)),
                 When(InvalidAmountEvent)
                     .TransitionTo(Failed)
-                    .Publish(context => new CancelTransferCommand
-                    {
-                        TransactionId = context.Message.TransactionId,
-                        CorrelationId = context.Message.CorrelationId
-                    })
+                    .Publish(context => new CancelTransferCommand(context.Message.CorrelationId, context.Message.TransactionId)),
+                When(InvalidAccountEvent)
+                    .TransitionTo(Failed)
+                    .Publish(context => new CancelTransferCommand(context.Message.CorrelationId, context.Message.TransactionId))
             );
 
 
             During(Transferring,
                 When(TransferSucceededEvent)
                     .TransitionTo(Receiving)
-                    .Publish(context => new IssueReceiptCommand
-                    {
-                        TransactionId = context.Message.TransactionId,
-                        CorrelationId = context.Message.CorrelationId
-                    }),
+                    .Publish(context => new IssueReceiptCommand(context.Message.CorrelationId, context.Message.TransactionId)),
                 When(OtherReasonTransferFailedEvent)
                     .TransitionTo(Failed)
-                    .Publish(context => new CancelTransferCommand
-                    {
-                        TransactionId = context.Message.TransactionId,
-                        CorrelationId = context.Message.CorrelationId
-                    })
+                    .Publish(context => new CancelTransferCommand(context.Message.CorrelationId, context.Message.TransactionId))
             );
 
             During(Receiving,
                 When(ReceiptIssuedEvent)
-                    .TransitionTo(Completed),
+                    .Finalize(),
                 When(OtherReasonReceiptFailedEvent)
                     .TransitionTo(Failed)
-                    .Publish(context => new CancelTransferCommand
-                    {
-                        TransactionId = context.Message.TransactionId,
-                        CorrelationId = context.Message.CorrelationId
-                    })
+                    .Publish(context => new CancelTransferCommand(context.Message.CorrelationId, context.Message.TransactionId))
             );
 
             During(Failed,
                 When(TransferCanceledEvent)
-                    .TransitionTo(Completed),
+                    .Finalize(),
                 When(TransferNotCanceledEvent)
                     .TransitionTo(Failed)
             );
 
-    
+
         }
     }
 }

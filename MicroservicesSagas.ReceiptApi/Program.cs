@@ -16,14 +16,13 @@ builder.Services.AddMassTransit(x =>
 {
 
     x.AddConsumer<ReceiptConsumer>();
-    x.AddConsumer<CancelTransferConsumer>();
 
 
     x.UsingAzureServiceBus((context, cfg) =>
     {
 
 
-        cfg.Host(builder.Configuration["AzureServiceBus:ConnectionString"]);
+        cfg.Host(builder.Configuration.GetConnectionString("AzureServiceBus"));
 
 
 
@@ -32,12 +31,6 @@ builder.Services.AddMassTransit(x =>
         {
             e.ConfigureConsumer<ReceiptConsumer>(context);
         });
-
-        cfg.SubscriptionEndpoint<CancelTransferCommand>("receipt-api", e =>
-        {
-            e.ConfigureConsumer<CancelTransferConsumer>(context);
-        });
-
 
     });
 });

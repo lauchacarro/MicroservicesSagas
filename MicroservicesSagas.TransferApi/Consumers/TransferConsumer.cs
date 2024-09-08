@@ -12,16 +12,11 @@ namespace MicroservicesSagas.TransferApi.Consumers
 
             if (transferResult.Success)
             {
-                await context.Publish(new TransferSucceededEvent { TransactionId = context.Message.TransactionId });
+                await context.Publish(new TransferSucceededEvent(context.Message.CorrelationId, context.Message.TransactionId));
             }
             else
             {
-                await context.Publish(new OtherReasonTransferFailedEvent
-                {
-                    TransactionId = context.Message.TransactionId,
-                    CorrelationId = context.Message.CorrelationId,
-                    Error = "Transfer failed"
-                });
+                await context.Publish(new OtherReasonTransferFailedEvent(context.Message.CorrelationId, context.Message.TransactionId, "Transfer failed"));
             }
         }
 

@@ -2,145 +2,33 @@
 
 namespace MicroservicesSagas.Commons
 {
-    public class SubmitTransferEvent : CorrelatedBy<Guid>
-    {
-        public Guid CorrelationId { get; set; }
-        public Guid TransactionId { get; set; }
-    }
+    public record SubmitTransferEvent(Guid CorrelationId, Guid TransactionId) : CorrelatedBy<Guid>;
 
-    public class ValidateTransferCommand : CorrelatedBy<Guid>
-    {
-        public Guid CorrelationId { get; set; }
+    public record ValidateTransferCommand(Guid CorrelationId, Guid TransactionId) : CorrelatedBy<Guid>;
 
-        public Guid TransactionId { get; set; }
-    }
+    public record TransferValidatedEvent(Guid CorrelationId, Guid TransactionId) : CorrelatedBy<Guid>;
 
+    public record InvalidAmountEvent(Guid CorrelationId, Guid TransactionId, string Error) : CorrelatedBy<Guid>;
 
-    public class TransferValidatedEvent : CorrelatedBy<Guid>
-    {
-        public Guid CorrelationId { get; set; }
+    public record InvalidAccountEvent(Guid CorrelationId, Guid TransactionId, string Error) : CorrelatedBy<Guid>;
 
-        public Guid TransactionId { get; set; }
+    public record OtherReasonValidationFailedEvent(Guid CorrelationId, Guid TransactionId, string Error) : CorrelatedBy<Guid>;
 
-    }
+    public record CancelTransferCommand(Guid CorrelationId, Guid TransactionId) : CorrelatedBy<Guid>;
 
-    public class InvalidAmountEvent : CorrelatedBy<Guid>
-    {
-        public Guid CorrelationId { get; set; }
+    public record TransferCanceledEvent(Guid CorrelationId, Guid TransactionId) : CorrelatedBy<Guid>;
 
-        public Guid TransactionId { get; set; }
-        public string Error { get; set; }
+    public record TransferNotCanceledEvent(Guid CorrelationId, Guid TransactionId, string Error) : CorrelatedBy<Guid>;
 
-    }
+    public record TransferCommand(Guid CorrelationId, Guid TransactionId) : CorrelatedBy<Guid>;
 
-    public class InvalidAccountEvent : CorrelatedBy<Guid>
-    {
-        public Guid CorrelationId { get; set; }
+    public record TransferSucceededEvent(Guid CorrelationId, Guid TransactionId) : CorrelatedBy<Guid>;
 
-        public Guid TransactionId { get; set; }
-        public string Error { get; set; }
+    public record OtherReasonTransferFailedEvent(Guid CorrelationId, Guid TransactionId, string Error) : CorrelatedBy<Guid>;
 
-    }
+    public record IssueReceiptCommand(Guid CorrelationId, Guid TransactionId) : CorrelatedBy<Guid>;
 
+    public record ReceiptIssuedEvent(Guid CorrelationId, Guid TransactionId) : CorrelatedBy<Guid>;
 
-    public class OtherReasonValidationFailedEvent : CorrelatedBy<Guid>
-    {
-        public Guid CorrelationId { get; set; }
-
-        public Guid TransactionId { get; set; }
-        public string Error { get; set; }
-
-    }
-
-
-    public class CancelTransferCommand : CorrelatedBy<Guid>
-    {
-        public Guid CorrelationId { get; set; }
-
-        public Guid TransactionId { get; set; }
-
-    }
-
-    public class TransferCanceledEvent : CorrelatedBy<Guid>
-    {
-        public Guid CorrelationId { get; set; }
-
-        public Guid TransactionId { get; set; }
-
-    }
-    public class TransferNotCanceledEvent : CorrelatedBy<Guid>
-    {
-        public Guid CorrelationId { get; set; }
-
-        public Guid TransactionId { get; set; }
-        public string Error { get; set; }
-
-
-    }
-
-    /// <summary>
-    /// ////////////////////////////////////////
-    /// </summary>
-    /// 
-
-
-    public class TransferCommand : CorrelatedBy<Guid>
-    {
-        public Guid CorrelationId { get; set; }
-
-        public Guid TransactionId { get; set; }
-    }
-
-
-
-    public class TransferSucceededEvent : CorrelatedBy<Guid>
-    {
-        public Guid CorrelationId { get; set; }
-
-        public Guid TransactionId { get; set; }
-    }
-
-    public class OtherReasonTransferFailedEvent : CorrelatedBy<Guid>
-    {
-        public Guid CorrelationId { get; set; }
-
-        public Guid TransactionId { get; set; }
-        public string Error { get; set; }
-    }
-
-
-    /// <summary>
-    /// ////////////////////////////////////////
-    /// </summary>
-    /// 
-
-
-
-
-    public class IssueReceiptCommand : CorrelatedBy<Guid>
-    {
-        public Guid CorrelationId { get; set; }
-
-        public Guid TransactionId { get; set; }
-    }
-
-
-
-    public class ReceiptIssuedEvent : CorrelatedBy<Guid>
-    {
-        public Guid CorrelationId { get; set; }
-
-        public Guid TransactionId { get; set; }
-    }
-
-    public class OtherReasonReceiptFailedEvent : CorrelatedBy<Guid>
-    {
-        public Guid CorrelationId { get; set; }
-
-        public Guid TransactionId { get; set; }
-        public string Error { get; set; }
-    }
-
-
-
+    public record OtherReasonReceiptFailedEvent(Guid CorrelationId, Guid TransactionId, string Error) : CorrelatedBy<Guid>;
 }

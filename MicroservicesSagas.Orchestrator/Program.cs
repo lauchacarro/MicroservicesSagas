@@ -1,11 +1,13 @@
-using System.Transactions;
+using System.Reflection;
 
 using MassTransit;
 
 using MicroservicesSagas.Commons;
 using MicroservicesSagas.Orchestrator;
+using MicroservicesSagas.Orchestrator.Data;
 
-using static MassTransit.Logging.OperationName;
+using Microsoft.EntityFrameworkCore;
+
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,20 +21,27 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddMassTransit(x =>
 {
     x.AddSagaStateMachine<TransferStateMachine, TransferSagaState>()
-        .InMemoryRepository();
+     .EntityFrameworkRepository(r =>
+     {
+         r.ConcurrencyMode = ConcurrencyMode.Optimistic;
 
+         r.AddDbContext<DbContext, TransferSagaDbContext>((provider, builderEf) =>
+         {
+             builderEf.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer"), m =>
+             {
+                 m.MigrationsAssembly(Assembly.GetExecutingAssembly().GetName().Name);
+                 m.MigrationsHistoryTable($"__{nameof(TransferSagaDbContext)}");
+             });
+         });
+     });
 
-    //x.UsingRabbitMq((context, cfg) =>
-    //{
-    //    cfg.ConfigureEndpoints(context);
-    //});
 
     x.UsingAzureServiceBus((context, cfg) =>
     {
-        cfg.Host(builder.Configuration["AzureServiceBus:ConnectionString"]);
+        cfg.Host(builder.Configuration.GetConnectionString("AzureServiceBus"));
 
         cfg.ConfigureEndpoints(context);
-     
+
     });
 });
 
@@ -51,10 +60,7 @@ app.UseHttpsRedirection();
 
 app.MapPost("CreateTransaction", async (IPublishEndpoint publishEndpoint) =>
 {
-    await publishEndpoint.Publish(new SubmitTransferEvent()
-    {
-        TransactionId = Guid.NewGuid(),
-    });
+    await publishEndpoint.Publish(new SubmitTransferEvent(Guid.NewGuid(), Guid.NewGuid()));
 });
 
 app.Run();

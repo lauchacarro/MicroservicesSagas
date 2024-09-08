@@ -12,15 +12,11 @@ namespace MicroservicesSagas.ReceiptApi.Consumers
 
             if (receiptResult.Success)
             {
-                await context.Publish(new ReceiptIssuedEvent { TransactionId = context.Message.TransactionId });
+                await context.Publish(new ReceiptIssuedEvent(context.Message.CorrelationId, context.Message.TransactionId));
             }
             else
             {
-                await context.Publish(new OtherReasonReceiptFailedEvent
-                {
-                    TransactionId = context.Message.TransactionId,
-                    Error = "Receipt recording failed"
-                });
+                await context.Publish(new OtherReasonReceiptFailedEvent(context.Message.CorrelationId, context.Message.TransactionId, "Receipt recording failed"));
             }
         }
 

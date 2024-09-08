@@ -11,29 +11,19 @@ namespace MicroservicesSagas.ValidatorApi.Consumers
 
             if (await IsInvalidAmount(context.Message.TransactionId))
             {
-                await context.Publish(new InvalidAmountEvent
-                {
-                    TransactionId = context.Message.TransactionId,
-                    CorrelationId = context.Message.CorrelationId,
-                    Error = "El monto de la transferencia es invalido."
-                });
+                await context.Publish(new InvalidAmountEvent(context.Message.CorrelationId, context.Message.TransactionId, "El monto de la transferencia es invalido."));
                 return;
             }
 
 
             if (await IsInvalidAccount(context.Message.TransactionId))
             {
-                await context.Publish(new InvalidAmountEvent
-                {
-                    TransactionId = context.Message.TransactionId,
-                    CorrelationId = context.Message.CorrelationId,
-                    Error = "La cuenta de la transferencia es invalida."
-                });
+                await context.Publish(new InvalidAmountEvent(context.Message.CorrelationId, context.Message.TransactionId, "La cuenta de la transferencia es invalida."));
                 return;
             }
 
 
-            await context.Publish(new TransferValidatedEvent { TransactionId = context.Message.TransactionId });
+            await context.Publish(new TransferValidatedEvent(context.Message.CorrelationId, context.Message.TransactionId));
 
         }
 
