@@ -1,0 +1,6 @@
+@MicroservicesSagas.Orchestrator_HostAddress = http://localhost:5268
+
+GET {{MicroservicesSagas.Orchestrator_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
