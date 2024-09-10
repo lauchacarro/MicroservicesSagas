@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MicroservicesSagas.Orchestrator.Migrations
 {
     [DbContext(typeof(TransferSagaDbContext))]
-    [Migration("20240908214235_IntialMigration")]
+    [Migration("20240908225259_IntialMigration")]
     partial class IntialMigration
     {
         /// <inheritdoc />
@@ -50,7 +50,7 @@ namespace MicroservicesSagas.Orchestrator.Migrations
 
                     b.HasKey("CorrelationId");
 
-                    b.ToTable("TransferSagaState", "saga");
+                    b.ToTable("Transfers", "saga");
                 });
 #pragma warning restore 612, 618
         }

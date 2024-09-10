@@ -3,7 +3,6 @@ using MassTransit;
 using MicroservicesSagas.Commons;
 using MicroservicesSagas.ValidatorApi.Consumers;
 
-using static MassTransit.Logging.OperationName;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -55,8 +54,3 @@ app.UseHttpsRedirection();
 
 
 app.Run();
-
-internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
-{
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}

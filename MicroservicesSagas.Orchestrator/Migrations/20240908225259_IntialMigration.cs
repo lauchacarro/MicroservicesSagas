@@ -15,7 +15,7 @@ namespace MicroservicesSagas.Orchestrator.Migrations
                 name: "saga");
 
             migrationBuilder.CreateTable(
-                name: "TransferSagaState",
+                name: "Transfers",
                 schema: "saga",
                 columns: table => new
                 {
@@ -27,7 +27,7 @@ namespace MicroservicesSagas.Orchestrator.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_TransferSagaState", x => x.CorrelationId);
+                    table.PrimaryKey("PK_Transfers", x => x.CorrelationId);
                 });
         }
 
@@ -35,7 +35,7 @@ namespace MicroservicesSagas.Orchestrator.Migrations
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "TransferSagaState",
+                name: "Transfers",
                 schema: "saga");
         }
     }

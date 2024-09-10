@@ -47,7 +47,7 @@ namespace MicroservicesSagas.Orchestrator.Migrations
 
                     b.HasKey("CorrelationId");
 
-                    b.ToTable("TransferSagaState", "saga");
+                    b.ToTable("Transfers", "saga");
                 });
 #pragma warning restore 612, 618
         }

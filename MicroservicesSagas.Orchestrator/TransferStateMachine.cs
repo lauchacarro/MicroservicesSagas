@@ -31,6 +31,7 @@ namespace MicroservicesSagas.Orchestrator
             Initially(
                 When(SubmitTransfer)
                     .Then(x => x.Saga.CreatedAt = DateTime.Now)
+                    .Then(x => x.Saga.TransactionId = x.Message.TransactionId)
                     .TransitionTo(Validating)
                     .Publish(context => new ValidateTransferCommand(context.Message.CorrelationId, context.Message.TransactionId))
             );

@@ -12,6 +12,8 @@ namespace MicroservicesSagas.Orchestrator.Data
            
         }
 
+        public DbSet<TransferSagaState> Transfers => Set<TransferSagaState>();
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
